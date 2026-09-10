@@ -16,6 +16,7 @@ st.set_page_config(
 
 # ==================================================
 # 그래프 색상
+# 노란색 / 연하늘색 / 연초록색 / 베이비핑크
 # ==================================================
 
 GRAPH_COLORS = [
@@ -27,7 +28,7 @@ GRAPH_COLORS = [
 
 
 # ==================================================
-# 화면 스타일 + 구름 애니메이션
+# 화면 디자인
 # ==================================================
 
 st.markdown(
@@ -39,213 +40,163 @@ st.markdown(
        ========================================== */
 
     .stApp {
-        background: linear-gradient(
-            180deg,
-            #BFE7FF 0%,
-            #DDF3FF 45%,
-            #EEF9FF 100%
-        );
+        background:
+            linear-gradient(
+                180deg,
+                #BFE7FF 0%,
+                #DDF3FF 48%,
+                #EEF9FF 100%
+            );
 
         overflow-x: hidden;
     }
 
 
-    /* 내용 영역 */
-
-    .main .block-container {
-        position: relative;
-        z-index: 5;
-
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-    }
-
-
     /* ==========================================
-       구름 배경
+       움직이는 구름
+       HTML div를 사용하지 않고
+       CSS pseudo-element만 사용
        ========================================== */
 
-    .cloud-background {
+    .stApp::before {
+        content: "";
+
         position: fixed;
 
-        inset: 0;
+        width: 420px;
+        height: 120px;
 
-        width: 100%;
-        height: 100%;
+        top: 14%;
+        left: -500px;
 
-        overflow: hidden;
+        z-index: 0;
 
         pointer-events: none;
 
-        z-index: 0;
-    }
+        opacity: 0.62;
 
-
-    .cloud {
-        position: absolute;
-
-        background: rgba(255, 255, 255, 0.78);
-
-        border-radius: 100px;
+        background:
+            radial-gradient(
+                ellipse at 25% 70%,
+                rgba(255,255,255,0.95) 0 18%,
+                transparent 19%
+            ),
+            radial-gradient(
+                ellipse at 45% 50%,
+                rgba(255,255,255,0.95) 0 25%,
+                transparent 26%
+            ),
+            radial-gradient(
+                ellipse at 68% 65%,
+                rgba(255,255,255,0.95) 0 22%,
+                transparent 23%
+            ),
+            radial-gradient(
+                ellipse at 82% 72%,
+                rgba(255,255,255,0.90) 0 16%,
+                transparent 17%
+            );
 
         filter: blur(1px);
 
-        box-shadow:
-            0 10px 30px rgba(120, 180, 210, 0.08);
+        animation:
+            cloudMove1 55s linear infinite;
     }
 
 
-    .cloud::before,
-    .cloud::after {
+    .stApp::after {
         content: "";
 
-        position: absolute;
+        position: fixed;
 
-        background: inherit;
+        width: 520px;
+        height: 150px;
 
-        border-radius: 50%;
-    }
+        top: 52%;
+        left: -600px;
 
+        z-index: 0;
 
-    .cloud::before {
-        width: 45%;
-        height: 150%;
-
-        left: 15%;
-        bottom: 0;
-    }
-
-
-    .cloud::after {
-        width: 55%;
-        height: 180%;
-
-        right: 12%;
-        bottom: 0;
-    }
-
-
-    /* 구름 1 */
-
-    .cloud1 {
-        width: 220px;
-        height: 65px;
-
-        top: 12%;
-        left: -250px;
-
-        animation:
-            moveCloud1 55s linear infinite;
-
-        opacity: 0.65;
-    }
-
-
-    /* 구름 2 */
-
-    .cloud2 {
-        width: 320px;
-        height: 85px;
-
-        top: 32%;
-        left: -350px;
-
-        animation:
-            moveCloud2 75s linear infinite;
-
-        opacity: 0.48;
-    }
-
-
-    /* 구름 3 */
-
-    .cloud3 {
-        width: 180px;
-        height: 55px;
-
-        top: 57%;
-        left: -220px;
-
-        animation:
-            moveCloud3 62s linear infinite;
-
-        opacity: 0.55;
-    }
-
-
-    /* 구름 4 */
-
-    .cloud4 {
-        width: 280px;
-        height: 75px;
-
-        top: 78%;
-        left: -320px;
-
-        animation:
-            moveCloud4 85s linear infinite;
+        pointer-events: none;
 
         opacity: 0.42;
+
+        background:
+            radial-gradient(
+                ellipse at 20% 70%,
+                rgba(255,255,255,0.95) 0 17%,
+                transparent 18%
+            ),
+            radial-gradient(
+                ellipse at 38% 48%,
+                rgba(255,255,255,0.95) 0 25%,
+                transparent 26%
+            ),
+            radial-gradient(
+                ellipse at 60% 60%,
+                rgba(255,255,255,0.95) 0 22%,
+                transparent 23%
+            ),
+            radial-gradient(
+                ellipse at 80% 70%,
+                rgba(255,255,255,0.90) 0 18%,
+                transparent 19%
+            );
+
+        filter: blur(1px);
+
+        animation:
+            cloudMove2 75s linear infinite;
     }
 
 
     /* ==========================================
-       구름 움직임
+       구름 애니메이션
        ========================================== */
 
-    @keyframes moveCloud1 {
+    @keyframes cloudMove1 {
 
-        from {
+        0% {
             transform: translateX(0);
         }
 
-        to {
-            transform: translateX(
-                calc(100vw + 500px)
-            );
+        100% {
+            transform:
+                translateX(
+                    calc(100vw + 600px)
+                );
         }
     }
 
 
-    @keyframes moveCloud2 {
+    @keyframes cloudMove2 {
 
-        from {
+        0% {
             transform: translateX(0);
         }
 
-        to {
-            transform: translateX(
-                calc(100vw + 600px)
-            );
+        100% {
+            transform:
+                translateX(
+                    calc(100vw + 700px)
+                );
         }
     }
 
 
-    @keyframes moveCloud3 {
+    /* ==========================================
+       Streamlit 내용
+       ========================================== */
 
-        from {
-            transform: translateX(0);
-        }
+    .main .block-container {
 
-        to {
-            transform: translateX(
-                calc(100vw + 450px)
-            );
-        }
-    }
+        position: relative;
 
+        z-index: 5;
 
-    @keyframes moveCloud4 {
+        padding-top: 2rem;
 
-        from {
-            transform: translateX(0);
-        }
-
-        to {
-            transform: translateX(
-                calc(100vw + 550px)
-            );
-        }
+        padding-bottom: 3rem;
     }
 
 
@@ -256,6 +207,7 @@ st.markdown(
     h1,
     h2,
     h3 {
+
         color: #24445C;
     }
 
@@ -265,9 +217,13 @@ st.markdown(
        ========================================== */
 
     .graph-section {
-        background: rgba(255, 255, 255, 0.78);
 
-        border: 1px solid rgba(255, 255, 255, 0.9);
+        background:
+            rgba(255, 255, 255, 0.78);
+
+        border:
+            1px solid
+            rgba(255, 255, 255, 0.9);
 
         border-radius: 18px;
 
@@ -276,20 +232,26 @@ st.markdown(
         margin: 1.5rem 0;
 
         box-shadow:
-            0 8px 30px rgba(80, 150, 190, 0.10);
+            0 8px 30px
+            rgba(80, 150, 190, 0.10);
 
-        backdrop-filter: blur(6px);
+        backdrop-filter:
+            blur(6px);
     }
 
 
     /* ==========================================
-       설명 박스
+       그래프로 알 수 있는 것
        ========================================== */
 
     .graph-explanation {
-        background: rgba(255, 249, 190, 0.90);
 
-        border-left: 5px solid #F3CE55;
+        background:
+            rgba(255, 249, 190, 0.90);
+
+        border-left:
+            5px solid
+            #F3CE55;
 
         border-radius: 10px;
 
@@ -316,22 +278,6 @@ st.markdown(
     }
 
     </style>
-
-
-    <!-- 움직이는 구름 -->
-
-    <div class="cloud-background">
-
-        <div class="cloud cloud1"></div>
-
-        <div class="cloud cloud2"></div>
-
-        <div class="cloud cloud3"></div>
-
-        <div class="cloud cloud4"></div>
-
-    </div>
-
     """,
     unsafe_allow_html=True,
 )
@@ -422,9 +368,9 @@ st.subheader(
 )
 
 
-# --------------------------------------------------
+# ==================================================
 # 영화 선택
-# --------------------------------------------------
+# ==================================================
 
 movie_list = sorted(
     df["영화명"]
@@ -439,9 +385,9 @@ selected_movie = st.selectbox(
 )
 
 
-# --------------------------------------------------
+# ==================================================
 # 선택한 영화 데이터
-# --------------------------------------------------
+# ==================================================
 
 movie_df = (
     df[
@@ -453,7 +399,7 @@ movie_df = (
 
 
 # ==================================================
-# 최다 관객 날짜 찾기
+# 최다 관객 날짜
 # ==================================================
 
 max_row = movie_df.loc[
@@ -499,9 +445,9 @@ fig1 = px.line(
 )
 
 
-# --------------------------------------------------
+# ==================================================
 # 마우스 오버
-# --------------------------------------------------
+# ==================================================
 
 fig1.update_traces(
 
@@ -553,7 +499,7 @@ fig1.add_annotation(
 
 
 # ==================================================
-# ② 최다 관객 날짜
+# ② 가장 많은 관객이 몰린 날
 # ==================================================
 
 fig1.add_annotation(
@@ -752,9 +698,9 @@ movie_totals = (
 )
 
 
-# --------------------------------------------------
+# ==================================================
 # 상위 5편
-# --------------------------------------------------
+# ==================================================
 
 top5_movies = (
 
@@ -946,7 +892,7 @@ st.markdown(
     """
     <div class="graph-explanation">
 
-        <b>이 그래프로 알 수 있는 것</b>:
+        이 그래프로 알 수 있는 것:
         영화의 일별 관객수가 시간의 흐름에 따라
         어떻게 증가하고 감소했는지 알 수 있습니다.
 
