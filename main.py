@@ -104,6 +104,185 @@ st.markdown(
         top: 32%;
         left: -350px;
         animation: moveCloud2 75s linear infinite;
+        # ==================================================
+# 그래프 2
+# ==================================================
+
+st.markdown(
+    '<div class="graph-section">',
+    unsafe_allow_html=True,
+)
+
+st.subheader("그래프 2. 일관객 합계가 가장 큰 영화 5편의 변화")
+
+
+# --------------------------------------------------
+# 전체 기간 일관객 합계가 가장 큰 영화 5편 찾기
+# --------------------------------------------------
+
+top5_movies = (
+    df.groupby("영화명")["일관객"]
+    .sum()
+    .sort_values(ascending=False)
+    .head(5)
+    .index
+    .tolist()
+)
+
+
+# 상위 5편 데이터만 가져오기
+top5_df = df[
+    df["영화명"].isin(top5_movies)
+].copy()
+
+
+# 날짜순 정렬
+top5_df = top5_df.sort_values(
+    ["날짜", "영화명"]
+)
+
+
+# --------------------------------------------------
+# 선 그래프
+# --------------------------------------------------
+
+fig2 = px.line(
+    top5_df,
+
+    x="날짜",
+
+    y="일관객",
+
+    color="영화명",
+
+    markers=True,
+
+    labels={
+        "날짜": "날짜",
+        "일관객": "일관객 수",
+        "영화명": "영화",
+    },
+
+    title="기간 내 일관객 합계 상위 5편",
+)
+
+
+# --------------------------------------------------
+# 마우스 오버
+# --------------------------------------------------
+
+fig2.update_traces(
+    hovertemplate=
+        "<b>%{fullData.name}</b>"
+        "<br>날짜: %{x|%Y-%m-%d}"
+        "<br>관객수: %{y:,}명"
+        "<extra></extra>"
+)
+
+
+# --------------------------------------------------
+# 그래프 설명 표시
+# --------------------------------------------------
+
+fig2.add_annotation(
+
+    xref="paper",
+    yref="paper",
+
+    x=0.01,
+    y=0.97,
+
+    text="① 기간 전체에서 관객이 많이 모인 영화들의 변화",
+
+    showarrow=False,
+
+    font=dict(
+        size=14,
+        color="#315B73",
+    ),
+
+    bgcolor="rgba(255,255,255,0.82)",
+
+    bordercolor="#A8D8F0",
+
+    borderwidth=1,
+
+    borderpad=6,
+
+    xanchor="left",
+    yanchor="top",
+)
+# --------------------------------------------------
+# 그래프 디자인
+# --------------------------------------------------
+
+fig2.update_layout(
+
+    hovermode="x unified",
+
+    xaxis_title="날짜",
+
+    yaxis_title="일관객 수(명)",
+
+    plot_bgcolor="rgba(255,255,255,0.55)",
+
+    paper_bgcolor="rgba(255,255,255,0)",
+
+    margin=dict(
+        l=20,
+        r=20,
+        t=80,
+        b=20,
+    ),
+
+    # 범례 설정
+    legend=dict(
+        title="영화",
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="left",
+        x=0,
+    ),
+)
+
+
+# --------------------------------------------------
+# 그래프 출력
+# --------------------------------------------------
+
+st.plotly_chart(
+    fig2,
+    use_container_width=True,
+)
+
+
+# --------------------------------------------------
+# 그래프로 알 수 있는 것
+# --------------------------------------------------
+
+st.markdown(
+    """
+    <div class="graph-explanation">
+
+        <b>이 그래프로 알 수 있는 것</b><br>
+
+        기간 전체에서 관객이 많이 모인 영화 5편을 비교하여
+        <b>영화마다 흥행 시점과 관객수의 변화가 어떻게 다른지</b>
+        살펴볼 수 있습니다.
+
+    </div>
+    """,
+
+    unsafe_allow_html=True,
+)
+
+
+st.markdown(
+    "</div>",
+    unsafe_allow_html=True,
+)
+
         opacity: 0.48;
     }
 
