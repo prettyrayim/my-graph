@@ -3,9 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 
-# --------------------------------------------------
+# ==================================================
 # 기본 설정
-# --------------------------------------------------
+# ==================================================
+
 st.set_page_config(
     page_title="영화 데이터 그래프 도감 1 - 시간",
     page_icon="🎬",
@@ -13,16 +14,30 @@ st.set_page_config(
 )
 
 
-# --------------------------------------------------
-# 화면 스타일 + 애니메이션 구름 배경
-# --------------------------------------------------
+# ==================================================
+# 그래프 색상
+# ==================================================
+
+GRAPH_COLORS = [
+    "#FFD966",  # 노란색
+    "#9DD9F3",  # 연하늘색
+    "#B7E4C7",  # 연초록색
+    "#F7B6C8",  # 베이비핑크
+]
+
+
+# ==================================================
+# 화면 스타일 + 구름 애니메이션
+# ==================================================
+
 st.markdown(
     """
     <style>
 
-    /* ================================
+    /* ==========================================
        전체 배경
-       ================================ */
+       ========================================== */
+
     .stApp {
         background: linear-gradient(
             180deg,
@@ -30,82 +45,370 @@ st.markdown(
             #DDF3FF 45%,
             #EEF9FF 100%
         );
+
         overflow-x: hidden;
     }
 
-    /* Streamlit 기본 내용 영역 */
+
+    /* 내용 영역 */
+
     .main .block-container {
         position: relative;
         z-index: 5;
+
         padding-top: 2rem;
         padding-bottom: 3rem;
     }
 
 
-    /* ================================
+    /* ==========================================
        구름 배경
-       ================================ */
+       ========================================== */
 
     .cloud-background {
         position: fixed;
+
         inset: 0;
+
         width: 100%;
         height: 100%;
+
         overflow: hidden;
+
         pointer-events: none;
+
         z-index: 0;
     }
 
+
     .cloud {
         position: absolute;
+
         background: rgba(255, 255, 255, 0.78);
+
         border-radius: 100px;
+
         filter: blur(1px);
+
         box-shadow:
             0 10px 30px rgba(120, 180, 210, 0.08);
     }
 
+
     .cloud::before,
     .cloud::after {
         content: "";
+
         position: absolute;
+
         background: inherit;
+
         border-radius: 50%;
     }
+
 
     .cloud::before {
         width: 45%;
         height: 150%;
+
         left: 15%;
         bottom: 0;
     }
 
+
     .cloud::after {
         width: 55%;
         height: 180%;
+
         right: 12%;
         bottom: 0;
     }
 
+
     /* 구름 1 */
+
     .cloud1 {
         width: 220px;
         height: 65px;
+
         top: 12%;
         left: -250px;
-        animation: moveCloud1 55s linear infinite;
+
+        animation:
+            moveCloud1 55s linear infinite;
+
         opacity: 0.65;
     }
 
+
     /* 구름 2 */
+
     .cloud2 {
         width: 320px;
         height: 85px;
+
         top: 32%;
         left: -350px;
-        animation: moveCloud2 75s linear infinite;
-        # ==================================================
-# 그래프 2
+
+        animation:
+            moveCloud2 75s linear infinite;
+
+        opacity: 0.48;
+    }
+
+
+    /* 구름 3 */
+
+    .cloud3 {
+        width: 180px;
+        height: 55px;
+
+        top: 57%;
+        left: -220px;
+
+        animation:
+            moveCloud3 62s linear infinite;
+
+        opacity: 0.55;
+    }
+
+
+    /* 구름 4 */
+
+    .cloud4 {
+        width: 280px;
+        height: 75px;
+
+        top: 78%;
+        left: -320px;
+
+        animation:
+            moveCloud4 85s linear infinite;
+
+        opacity: 0.42;
+    }
+
+
+    /* ==========================================
+       구름 움직임
+       ========================================== */
+
+    @keyframes moveCloud1 {
+
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(
+                calc(100vw + 500px)
+            );
+        }
+    }
+
+
+    @keyframes moveCloud2 {
+
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(
+                calc(100vw + 600px)
+            );
+        }
+    }
+
+
+    @keyframes moveCloud3 {
+
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(
+                calc(100vw + 450px)
+            );
+        }
+    }
+
+
+    @keyframes moveCloud4 {
+
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(
+                calc(100vw + 550px)
+            );
+        }
+    }
+
+
+    /* ==========================================
+       제목
+       ========================================== */
+
+    h1,
+    h2,
+    h3 {
+        color: #24445C;
+    }
+
+
+    /* ==========================================
+       그래프 카드
+       ========================================== */
+
+    .graph-section {
+        background: rgba(255, 255, 255, 0.78);
+
+        border: 1px solid rgba(255, 255, 255, 0.9);
+
+        border-radius: 18px;
+
+        padding: 1.5rem;
+
+        margin: 1.5rem 0;
+
+        box-shadow:
+            0 8px 30px rgba(80, 150, 190, 0.10);
+
+        backdrop-filter: blur(6px);
+    }
+
+
+    /* ==========================================
+       설명 박스
+       ========================================== */
+
+    .graph-explanation {
+        background: rgba(255, 249, 190, 0.90);
+
+        border-left: 5px solid #F3CE55;
+
+        border-radius: 10px;
+
+        padding: 0.9rem 1rem;
+
+        color: #5A4A00;
+
+        margin-top: 0.8rem;
+
+        line-height: 1.7;
+    }
+
+
+    /* ==========================================
+       영화 선택 박스
+       ========================================== */
+
+    div[data-baseweb="select"] > div {
+
+        background-color:
+            rgba(255, 255, 255, 0.90);
+
+        border-radius: 10px;
+    }
+
+    </style>
+
+
+    <!-- 움직이는 구름 -->
+
+    <div class="cloud-background">
+
+        <div class="cloud cloud1"></div>
+
+        <div class="cloud cloud2"></div>
+
+        <div class="cloud cloud3"></div>
+
+        <div class="cloud cloud4"></div>
+
+    </div>
+
+    """,
+    unsafe_allow_html=True,
+)
+
+
+# ==================================================
+# 데이터 불러오기
+# ==================================================
+
+DATA_URL = (
+    "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_daily.csv"
+)
+
+
+@st.cache_data
+def load_data():
+
+    df = pd.read_csv(DATA_URL)
+
+
+    # ----------------------------------------------
+    # 날짜 변환
+    # YYYYMMDD → 실제 날짜
+    # ----------------------------------------------
+
+    df["날짜"] = pd.to_datetime(
+        df["날짜"].astype(str),
+        format="%Y%m%d",
+        errors="coerce",
+    )
+
+
+    # ----------------------------------------------
+    # 숫자형 데이터 변환
+    # ----------------------------------------------
+
+    numeric_columns = [
+        "순위",
+        "영화코드",
+        "일관객",
+        "누적관객",
+        "스크린수",
+        "상영횟수",
+    ]
+
+
+    for column in numeric_columns:
+
+        df[column] = pd.to_numeric(
+            df[column],
+            errors="coerce",
+        )
+
+
+    return df
+
+
+df = load_data()
+
+
+# ==================================================
+# 제목
+# ==================================================
+
+st.title(
+    "🎬 영화 데이터 그래프 도감 1 - 시간"
+)
+
+
+st.write(
+    "1년치 일별 박스오피스 데이터를 이용해 "
+    "영화의 시간에 따른 관객 변화를 살펴봅니다."
+)
+
+
+# ==================================================
+# 그래프 1
 # ==================================================
 
 st.markdown(
@@ -113,57 +416,86 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.subheader("그래프 2. 일관객 합계가 가장 큰 영화 5편의 변화")
 
-
-# --------------------------------------------------
-# 전체 기간 일관객 합계가 가장 큰 영화 5편 찾기
-# --------------------------------------------------
-
-top5_movies = (
-    df.groupby("영화명")["일관객"]
-    .sum()
-    .sort_values(ascending=False)
-    .head(5)
-    .index
-    .tolist()
-)
-
-
-# 상위 5편 데이터만 가져오기
-top5_df = df[
-    df["영화명"].isin(top5_movies)
-].copy()
-
-
-# 날짜순 정렬
-top5_df = top5_df.sort_values(
-    ["날짜", "영화명"]
+st.subheader(
+    "그래프 1. 영화별 일관객 변화"
 )
 
 
 # --------------------------------------------------
-# 선 그래프
+# 영화 선택
 # --------------------------------------------------
 
-fig2 = px.line(
-    top5_df,
+movie_list = sorted(
+    df["영화명"]
+    .dropna()
+    .unique()
+)
+
+
+selected_movie = st.selectbox(
+    "영화를 선택하세요.",
+    movie_list,
+)
+
+
+# --------------------------------------------------
+# 선택한 영화 데이터
+# --------------------------------------------------
+
+movie_df = (
+    df[
+        df["영화명"] == selected_movie
+    ]
+    .sort_values("날짜")
+    .copy()
+)
+
+
+# ==================================================
+# 최다 관객 날짜 찾기
+# ==================================================
+
+max_row = movie_df.loc[
+    movie_df["일관객"].idxmax()
+]
+
+
+max_date = max_row["날짜"]
+
+
+max_audience = int(
+    max_row["일관객"]
+)
+
+
+# ==================================================
+# 그래프 1
+# ==================================================
+
+fig1 = px.line(
+
+    movie_df,
 
     x="날짜",
 
     y="일관객",
-
-    color="영화명",
 
     markers=True,
 
     labels={
         "날짜": "날짜",
         "일관객": "일관객 수",
-        "영화명": "영화",
     },
 
-    title="기간 내 일관객 합계 상위 5편",
+    title=(
+        f"{selected_movie} - "
+        "날짜별 일관객 변화"
+    ),
+
+    color_discrete_sequence=[
+        GRAPH_COLORS[0]
+    ],
 )
 
 
@@ -171,28 +503,31 @@ fig2 = px.line(
 # 마우스 오버
 # --------------------------------------------------
 
-fig2.update_traces(
+fig1.update_traces(
+
     hovertemplate=
-        "<b>%{fullData.name}</b>"
-        "<br>날짜: %{x|%Y-%m-%d}"
-        "<br>관객수: %{y:,}명"
+        "날짜: %{x|%Y-%m-%d}"
+        "<br>"
+        "관객수: %{y:,}명"
         "<extra></extra>"
 )
 
 
-# --------------------------------------------------
-# 그래프 설명 표시
-# --------------------------------------------------
+# ==================================================
+# ① 흥행 추이
+# ==================================================
 
-fig2.add_annotation(
+fig1.add_annotation(
 
     xref="paper",
+
     yref="paper",
 
     x=0.01,
+
     y=0.97,
 
-    text="① 기간 전체에서 관객이 많이 모인 영화들의 변화",
+    text="① 시간에 따른 흥행 추이",
 
     showarrow=False,
 
@@ -201,7 +536,9 @@ fig2.add_annotation(
         color="#315B73",
     ),
 
-    bgcolor="rgba(255,255,255,0.82)",
+    bgcolor=(
+        "rgba(255,255,255,0.82)"
+    ),
 
     bordercolor="#A8D8F0",
 
@@ -210,13 +547,114 @@ fig2.add_annotation(
     borderpad=6,
 
     xanchor="left",
+
     yanchor="top",
 )
-# --------------------------------------------------
-# 그래프 디자인
-# --------------------------------------------------
 
-fig2.update_layout(
+
+# ==================================================
+# ② 최다 관객 날짜
+# ==================================================
+
+fig1.add_annotation(
+
+    x=max_date,
+
+    y=max_audience,
+
+    text=(
+        "<b>② 가장 많은 관객이 몰린 날</b>"
+        "<br>"
+        f"{max_date.strftime('%Y-%m-%d')}"
+        "<br>"
+        f"<b>{max_audience:,}명</b>"
+    ),
+
+    showarrow=True,
+
+    arrowhead=2,
+
+    arrowsize=1,
+
+    arrowwidth=2,
+
+    arrowcolor="#E07A5F",
+
+    ax=0,
+
+    ay=-80,
+
+    bgcolor=(
+        "rgba(255,250,220,0.95)"
+    ),
+
+    bordercolor="#E8B44D",
+
+    borderwidth=2,
+
+    borderpad=8,
+
+    font=dict(
+        size=13,
+        color="#5A4200",
+    ),
+)
+
+
+# ==================================================
+# 최다 관객 점 강조
+# ==================================================
+
+max_point = movie_df[
+    movie_df["날짜"] == max_date
+]
+
+
+fig1.add_trace(
+
+    px.scatter(
+
+        max_point,
+
+        x="날짜",
+
+        y="일관객",
+
+    ).data[0]
+)
+
+
+fig1.data[-1].update(
+
+    marker=dict(
+
+        size=13,
+
+        color=GRAPH_COLORS[3],
+
+        line=dict(
+
+            color="white",
+
+            width=2,
+        ),
+    ),
+
+    hovertemplate=
+        "⭐ 최다 관객"
+        "<br>"
+        "날짜: %{x|%Y-%m-%d}"
+        "<br>"
+        "관객수: %{y:,}명"
+        "<extra></extra>",
+)
+
+
+# ==================================================
+# 그래프 1 디자인
+# ==================================================
+
+fig1.update_layout(
 
     hovermode="x unified",
 
@@ -224,52 +662,51 @@ fig2.update_layout(
 
     yaxis_title="일관객 수(명)",
 
-    plot_bgcolor="rgba(255,255,255,0.55)",
-
-    paper_bgcolor="rgba(255,255,255,0)",
-
-    margin=dict(
-        l=20,
-        r=20,
-        t=80,
-        b=20,
+    plot_bgcolor=(
+        "rgba(255,255,255,0.55)"
     ),
 
-    # 범례 설정
-    legend=dict(
-        title="영화",
-        orientation="h",
-        yanchor="bottom",
-        y=1.02,
-        xanchor="left",
-        x=0,
+    paper_bgcolor=(
+        "rgba(255,255,255,0)"
+    ),
+
+    margin=dict(
+
+        l=20,
+
+        r=20,
+
+        t=80,
+
+        b=20,
     ),
 )
 
 
-# --------------------------------------------------
-# 그래프 출력
-# --------------------------------------------------
+# ==================================================
+# 그래프 1 출력
+# ==================================================
 
 st.plotly_chart(
-    fig2,
+
+    fig1,
+
     use_container_width=True,
 )
 
 
-# --------------------------------------------------
-# 그래프로 알 수 있는 것
-# --------------------------------------------------
+# ==================================================
+# 그래프 1 설명
+# ==================================================
 
 st.markdown(
+
     """
     <div class="graph-explanation">
 
-        <b>이 그래프로 알 수 있는 것</b><br>
-
-        기간 전체에서 관객이 많이 모인 영화 5편을 비교하여
-        <b>영화마다 흥행 시점과 관객수의 변화가 어떻게 다른지</b>
-        살펴볼 수 있습니다.
+        이 그래프로 알 수 있는 것:
+        영화의 일별 관객수가 시간의 흐름에 따라
+        어떻게 증가하고 감소했는지 알 수 있습니다.
 
     </div>
     """,
@@ -283,268 +720,239 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-        opacity: 0.48;
-    }
 
-    /* 구름 3 */
-    .cloud3 {
-        width: 180px;
-        height: 55px;
-        top: 57%;
-        left: -220px;
-        animation: moveCloud3 62s linear infinite;
-        opacity: 0.55;
-    }
+# ==================================================
+# 그래프 2
+# ==================================================
 
-    /* 구름 4 */
-    .cloud4 {
-        width: 280px;
-        height: 75px;
-        top: 78%;
-        left: -320px;
-        animation: moveCloud4 85s linear infinite;
-        opacity: 0.42;
-    }
-
-    @keyframes moveCloud1 {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(100vw + 500px));
-        }
-    }
-
-    @keyframes moveCloud2 {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(100vw + 600px));
-        }
-    }
-
-    @keyframes moveCloud3 {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(100vw + 450px));
-        }
-    }
-
-    @keyframes moveCloud4 {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            transform: translateX(calc(100vw + 550px));
-        }
-    }
-
-
-    /* ================================
-       제목
-       ================================ */
-
-    h1, h2, h3 {
-        color: #24445C;
-    }
-
-
-    /* ================================
-       그래프 구역
-       ================================ */
-
-    .graph-section {
-        background: rgba(255, 255, 255, 0.78);
-        border: 1px solid rgba(255, 255, 255, 0.9);
-        border-radius: 18px;
-        padding: 1.5rem;
-        margin: 1.5rem 0;
-
-        box-shadow:
-            0 8px 30px rgba(80, 150, 190, 0.10);
-
-        backdrop-filter: blur(6px);
-    }
-
-
-    /* ================================
-       그래프로 알 수 있는 것
-       ================================ */
-
-    .graph-explanation {
-        background: rgba(255, 249, 190, 0.88);
-        border-left: 5px solid #F3CE55;
-        border-radius: 10px;
-        padding: 0.9rem 1rem;
-        color: #5A4A00;
-        margin-top: 0.8rem;
-    }
-
-
-    /* 선택 박스 */
-    div[data-baseweb="select"] > div {
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
-    }
-
-    </style>
-
-
-    <!-- 애니메이션 구름 -->
-    <div class="cloud-background">
-        <div class="cloud cloud1"></div>
-        <div class="cloud cloud2"></div>
-        <div class="cloud cloud3"></div>
-        <div class="cloud cloud4"></div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-
-# --------------------------------------------------
-# 데이터 불러오기
-# --------------------------------------------------
-DATA_URL = (
-    "https://raw.githubusercontent.com/greatsong/modudata/main/data/kobis_daily.csv"
-)
-
-
-@st.cache_data
-def load_data():
-
-    df = pd.read_csv(DATA_URL)
-
-    # YYYYMMDD → 실제 날짜
-    df["날짜"] = pd.to_datetime(
-        df["날짜"].astype(str),
-        format="%Y%m%d",
-        errors="coerce",
-    )
-
-    # 숫자형 데이터
-    numeric_columns = [
-        "순위",
-        "영화코드",
-        "일관객",
-        "누적관객",
-        "스크린수",
-        "상영횟수",
-    ]
-
-    for column in numeric_columns:
-        df[column] = pd.to_numeric(
-            df[column],
-            errors="coerce",
-        )
-
-    return df
-
-
-df = load_data()
-
-
-# --------------------------------------------------
-# 제목
-# --------------------------------------------------
-st.title("🎬 영화 데이터 그래프 도감 1 - 시간")
-
-st.write(
-    "1년치 일별 박스오피스 데이터를 이용해 "
-    "영화의 시간에 따른 관객 변화를 살펴봅니다."
-)
-
-
-# --------------------------------------------------
-# 그래프 1
-# --------------------------------------------------
 st.markdown(
     '<div class="graph-section">',
     unsafe_allow_html=True,
 )
 
-st.subheader("그래프 1. 영화별 일관객 변화")
 
-movie_list = sorted(
-    df["영화명"]
-    .dropna()
-    .unique()
+st.subheader(
+    "그래프 2. 일관객 합계가 가장 큰 영화 5편의 변화"
 )
 
-selected_movie = st.selectbox(
-    "영화를 선택하세요.",
-    movie_list,
-)
 
-movie_df = (
-    df[df["영화명"] == selected_movie]
-    .sort_values("날짜")
-    .copy()
+# ==================================================
+# 영화별 일관객 합계
+# ==================================================
+
+movie_totals = (
+
+    df.groupby("영화명")["일관객"]
+
+    .sum()
+
+    .sort_values(
+        ascending=False
+    )
 )
 
 
 # --------------------------------------------------
-# 선 그래프
+# 상위 5편
 # --------------------------------------------------
-fig = px.line(
-    movie_df,
+
+top5_movies = (
+
+    movie_totals
+
+    .head(5)
+
+    .index
+
+    .tolist()
+)
+
+
+# ==================================================
+# 상위 5편 데이터
+# ==================================================
+
+top5_df = df[
+    df["영화명"].isin(top5_movies)
+].copy()
+
+
+top5_df = top5_df.sort_values(
+    [
+        "날짜",
+        "영화명",
+    ]
+)
+
+
+# ==================================================
+# 그래프 2
+# ==================================================
+
+fig2 = px.line(
+
+    top5_df,
+
     x="날짜",
+
     y="일관객",
+
+    color="영화명",
+
     markers=True,
+
     labels={
+
         "날짜": "날짜",
+
         "일관객": "일관객 수",
+
+        "영화명": "영화",
     },
-    title=f"{selected_movie} - 날짜별 일관객 변화",
+
+    title=(
+        "기간 내 일관객 합계 상위 5편"
+    ),
+
+    color_discrete_sequence=GRAPH_COLORS,
 )
 
 
-# 마우스를 올렸을 때 날짜 + 관객수 표시
-fig.update_traces(
+# ==================================================
+# 마우스 오버
+# ==================================================
+
+fig2.update_traces(
+
     hovertemplate=
+        "<b>%{fullData.name}</b>"
+        "<br>"
         "날짜: %{x|%Y-%m-%d}"
-        "<br>관객수: %{y:,}명"
+        "<br>"
+        "관객수: %{y:,}명"
         "<extra></extra>"
 )
 
 
-fig.update_layout(
+# ==================================================
+# ① 그래프 안 설명
+# ==================================================
+
+fig2.add_annotation(
+
+    xref="paper",
+
+    yref="paper",
+
+    x=0.01,
+
+    y=0.97,
+
+    text=(
+        "① 기간 전체에서 관객이 많이 모인 영화들의 변화"
+    ),
+
+    showarrow=False,
+
+    font=dict(
+
+        size=14,
+
+        color="#315B73",
+    ),
+
+    bgcolor=(
+        "rgba(255,255,255,0.82)"
+    ),
+
+    bordercolor="#A8D8F0",
+
+    borderwidth=1,
+
+    borderpad=6,
+
+    xanchor="left",
+
+    yanchor="top",
+)
+
+
+# ==================================================
+# 그래프 2 디자인
+# ==================================================
+
+fig2.update_layout(
+
     hovermode="x unified",
 
     xaxis_title="날짜",
+
     yaxis_title="일관객 수(명)",
 
-    plot_bgcolor="rgba(255,255,255,0.55)",
-    paper_bgcolor="rgba(255,255,255,0)",
+    plot_bgcolor=(
+        "rgba(255,255,255,0.55)"
+    ),
+
+    paper_bgcolor=(
+        "rgba(255,255,255,0)"
+    ),
 
     margin=dict(
+
         l=20,
+
         r=20,
-        t=60,
+
+        t=80,
+
         b=20,
+    ),
+
+    legend=dict(
+
+        title="영화",
+
+        orientation="h",
+
+        yanchor="bottom",
+
+        y=1.02,
+
+        xanchor="left",
+
+        x=0,
     ),
 )
 
 
+# ==================================================
+# 그래프 2 출력
+# ==================================================
+
 st.plotly_chart(
-    fig,
+
+    fig2,
+
     use_container_width=True,
 )
 
 
-# --------------------------------------------------
-# 그래프 설명
-# --------------------------------------------------
+# ==================================================
+# 그래프 2 설명
+# ==================================================
+
 st.markdown(
+
     """
     <div class="graph-explanation">
+
         <b>이 그래프로 알 수 있는 것</b>:
-        영화의 일별 관객수가 시간의 흐름에 따라 어떻게 증가하고 감소했는지 알 수 있습니다.
+        영화의 일별 관객수가 시간의 흐름에 따라
+        어떻게 증가하고 감소했는지 알 수 있습니다.
+
     </div>
     """,
+
     unsafe_allow_html=True,
 )
 
